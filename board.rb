@@ -8,13 +8,20 @@ class Board
   end
 
   def create_board
-    self.checkers_board = Array.new(8) {Array.new(8) {}}
+    self.checkers_board = Array.new(8) {Array.new(8) {" "}}
   end
 
   def display
     puts "+----+----+----+----+----+----+----+----+"
     self.checkers_board.each do |row|
-      puts "|  " + row.join("  |  ") + "  |"
+      row_string = ""
+
+      row.each do |el|
+        el = ((el.class == String) ? el : el.symbol)
+        row_string << el
+      end
+
+      puts "| " + row_string.split('').join("  | ") + "  |"
       puts "+----+----+----+----+----+----+----+----+"
     end
   end
