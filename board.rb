@@ -12,8 +12,8 @@ class Board
   end
 
   def display
-    puts "+----+----+----+----+----+----+----+----+"
-    self.checkers_board.each do |row|
+    puts "  +----+----+----+----+----+----+----+----+"
+    self.checkers_board.each_with_index do |row, idx|
       row_string = ""
 
       row.each do |el|
@@ -21,9 +21,10 @@ class Board
         row_string << el
       end
 
-      puts "| " + row_string.split('').join("  | ") + "  |"
-      puts "+----+----+----+----+----+----+----+----+"
+      puts "#{idx} | " + row_string.split('').join("  | ") + "  |"
+      puts "  +----+----+----+----+----+----+----+----+"
     end
+    puts "     0    1    2    3    4    5    6    7  "
   end
 
   # initializes starting pieces
