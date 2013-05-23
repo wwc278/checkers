@@ -5,9 +5,18 @@ require './board'
 require './pieces'
 
 class Checkers
+  attr_accessor :turn
   #loops through for user input
-  #creates new game
 
+  #creates new game
+  def initialize
+    @board = Board.new
+    #@pieces = Pieces.new
+  end
+
+  def play
+    @board.display
+  end
 
 end
 

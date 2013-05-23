@@ -1,8 +1,23 @@
 
 
 class Board
-
+  attr_accessor :checkers_board
   # initializes board with colorized grid pattern
+  def initialize
+    create_board
+  end
+
+  def create_board
+    self.checkers_board = Array.new(8) {Array.new(8) {}}
+  end
+
+  def display
+    puts "+----+----+----+----+----+----+----+----+"
+    self.checkers_board.each do |row|
+      puts "|  " + row.join("  |  ") + "  |"
+      puts "+----+----+----+----+----+----+----+----+"
+    end
+  end
 
   # initializes starting pieces
 
@@ -16,5 +31,7 @@ class Board
   # perform_slide
 
   # perform_jump, should remove jumped piece from board
+
+  # raise InvalidMoveError when performing moves
 
 end
