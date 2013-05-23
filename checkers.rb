@@ -5,6 +5,9 @@ require './board'
 require './pieces'
 
 class Checkers
+  #loops through for user input
+  #creates new game
+
 
 end
 
