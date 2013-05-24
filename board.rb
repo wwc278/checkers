@@ -50,6 +50,10 @@ class Board
     x1, y1 = start_pos
     x2, y2 = end_pos
 
+    unless correct_direction?(start_pos, end_pos)
+      raise InvalidMoveError.new "Not a possible move."
+    end
+
     raise InvalidMoveError.new "End position occupied." if occupied?(end_pos)
     move(start_pos, end_pos)
   end
@@ -59,12 +63,22 @@ class Board
     y2, x2 = end_pos
     mid_pos = [y1 - (y1 - y2) / 2, x1 - (x1 - x2) / 2]
 
-    if opp_occupied?(start_pos, mid_pos)
+    unless correct_direction?(start_pos, end_pos)
+      raise InvalidMoveError.new "Not a possible move."
+    end
+
+    if opp_occupied?(start_pos, mid_pos) && !occupied?(end_pos)
       put_at(mid_pos, " ") # set eaten piece to " " on board
       move(start_pos, end_pos)
     else
-      raise InvalidMoveError.new "No opponent to jump."
+      raise InvalidMoveError.new "No opponent to jump or end pos is occupied."
     end
+  end
+
+  def correct_direction?(start_pos, end_pos)
+    piece = piece_at(start_pos)
+    possible_moves = piece.sliding_moves + piece.jump_moves
+    possible_moves.include?(end_pos)
   end
 
   def move(start_pos, end_pos)
@@ -73,6 +87,7 @@ class Board
     put_at(start_pos, " ")
     piece.pos = end_pos
 
+    #check for king promotion after any move
     if (piece.pos[0] == 0 && piece.color == :white) ||
       (piece.pos[0] == 7 && piece.color == :black)
 
@@ -80,7 +95,6 @@ class Board
       piece.symbol = "\u2606" if piece.color == :white
       piece.symbol = "\u2605" if piece.color == :black
     end
-    display
   end
 
 

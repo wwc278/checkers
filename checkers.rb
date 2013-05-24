@@ -53,23 +53,70 @@ class Checkers
     coords
   end
 
-  def parse_coords(coords)
+  def perform_move(coords)
     coords.each_with_index do |pair, idx|
       next if idx == 0
 
       y2, x2 = pair
       y1, x1 = coords[idx - 1]
-
-      if (y2 - y1).abs == 2 && (x2 - x1).abs == 2
+      if type_of_move([y1, x1], pair) == :jump
         @board.perform_jump([y1, x1],[y2, x2])
-      elsif (y2 - y1).abs == 1 && (x2 - x1).abs == 1
+      elsif type_of_move([y1, x1], pair) == :slide
         @board.perform_slide([y1, x1],[y2, x2])
       else
-        raise InvalidMoveError.new
-        "Moves must be one space or two spaces away from previous move."
+        raise RuntimeError.new "How did I end up here?"
       end
 
     end
+  end
+
+  def type_of_move(start_pos, end_pos)
+    y1, x1 = start_pos
+    y2, x2 = end_pos
+    if (y2 - y1).abs == 2 && (x2 - x1).abs == 2
+      :jump
+    elsif (y2 - y1).abs == 1 && (x2 - x1).abs == 1
+      :slide
+    else
+      e_msg = "Moves must be one space or two spaces away from previous move."
+      raise InvalidMoveError.new e_msg
+    end
+
+  end
+
+  def valid_move_sequence?(coords)
+    returned_boolean = true
+    original_board = @board.checkers_board
+    @board.checkers_board = deep_dup(@board.checkers_board)
+
+    coords.each_with_index do |pair, idx|
+      next if idx == 0
+
+      begin
+        perform_move([coords[idx - 1], pair])
+      rescue ArgumentError => e
+        puts "Rescued in Checkers#valid_move_sequence?"
+        puts "Error was: #{e.message}"
+        returned_boolean = false
+      end
+    end
+
+    @board.checkers_board = original_board
+
+    returned_boolean
+  end
+
+
+  def deep_dup(item) # two levels deep!
+    copy = []
+    item.each do |row|
+      new_row = []
+      row.each do |el|
+        new_row << el.dup
+      end
+      copy << new_row
+    end
+    copy
   end
 
   #loops through for user input
@@ -77,15 +124,15 @@ class Checkers
     @board.display
     while true
 
-      begin
+      # begin
         coords = get_input
-        parse_coords(coords)
-
-      rescue ArgumentError => e
-        puts "Could not execute all or part of move sequence."
-        puts "Error was: #{e.message}"
-
-      end
+        perform_move(coords) if valid_move_sequence?(coords)
+        @board.display
+      # rescue ArgumentError => e
+      #   puts "Could not execute move sequence."
+      #   puts "Error was: #{e.message}"
+      #
+      # end
 
     end
   end
